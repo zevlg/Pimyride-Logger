@@ -6,58 +6,58 @@
 
 from MCP230xx import MCP230XX
 
-class CharLCDPlate(MCP230XX):
 
+class CharLCDPlate(MCP230XX):
     # ----------------------------------------------------------------------
     # Constants
 
     # Port expander input pin definitions
-    SELECT                  = 0
-    RIGHT                   = 1
-    DOWN                    = 2
-    UP                      = 3
-    LEFT                    = 4
+    SELECT = 0
+    RIGHT = 1
+    DOWN = 2
+    UP = 3
+    LEFT = 4
 
     # LED colors
-    OFF                     = 0x00
-    RED                     = 0x01
-    GREEN                   = 0x02
-    BLUE                    = 0x04
-    YELLOW                  = RED + GREEN
-    TEAL                    = GREEN + BLUE
-    VIOLET                  = RED + BLUE
-    WHITE                   = RED + GREEN + BLUE
-    ON                      = RED + GREEN + BLUE
+    OFF = 0x00
+    RED = 0x01
+    GREEN = 0x02
+    BLUE = 0x04
+    YELLOW = RED + GREEN
+    TEAL = GREEN + BLUE
+    VIOLET = RED + BLUE
+    WHITE = RED + GREEN + BLUE
+    ON = RED + GREEN + BLUE
 
     # LCD Commands
-    LCD_CLEARDISPLAY        = 0x01
-    LCD_RETURNHOME          = 0x02
-    LCD_ENTRYMODESET        = 0x04
-    LCD_DISPLAYCONTROL      = 0x08
-    LCD_CURSORSHIFT         = 0x10
-    LCD_FUNCTIONSET         = 0x20
-    LCD_SETCGRAMADDR        = 0x40
-    LCD_SETDDRAMADDR        = 0x80
+    LCD_CLEARDISPLAY = 0x01
+    LCD_RETURNHOME = 0x02
+    LCD_ENTRYMODESET = 0x04
+    LCD_DISPLAYCONTROL = 0x08
+    LCD_CURSORSHIFT = 0x10
+    LCD_FUNCTIONSET = 0x20
+    LCD_SETCGRAMADDR = 0x40
+    LCD_SETDDRAMADDR = 0x80
 
     # Flags for display on/off control
-    LCD_DISPLAYON           = 0x04
-    LCD_DISPLAYOFF          = 0x00
-    LCD_CURSORON            = 0x02
-    LCD_CURSOROFF           = 0x00
-    LCD_BLINKON             = 0x01
-    LCD_BLINKOFF            = 0x00
+    LCD_DISPLAYON = 0x04
+    LCD_DISPLAYOFF = 0x00
+    LCD_CURSORON = 0x02
+    LCD_CURSOROFF = 0x00
+    LCD_BLINKON = 0x01
+    LCD_BLINKOFF = 0x00
 
     # Flags for display entry mode
-    LCD_ENTRYRIGHT          = 0x00
-    LCD_ENTRYLEFT           = 0x02
+    LCD_ENTRYRIGHT = 0x00
+    LCD_ENTRYLEFT = 0x02
     LCD_ENTRYSHIFTINCREMENT = 0x01
     LCD_ENTRYSHIFTDECREMENT = 0x00
 
     # Flags for display/cursor shift
     LCD_DISPLAYMOVE = 0x08
-    LCD_CURSORMOVE  = 0x00
-    LCD_MOVERIGHT   = 0x04
-    LCD_MOVELEFT    = 0x00
+    LCD_CURSORMOVE = 0x00
+    LCD_MOVERIGHT = 0x04
+    LCD_MOVELEFT = 0x00
 
 
     # ----------------------------------------------------------------------
@@ -67,7 +67,7 @@ class CharLCDPlate(MCP230XX):
 
         self.mcp = MCP230XX(addr, 16, busnum, debug)
 
-        for i in range(0,16):
+        for i in range(0, 16):
             if i < 6:
                 # Configure button lines as inputs w/pullups
                 self.mcp.config(i, MCP230XX.INPUT)
@@ -83,10 +83,10 @@ class CharLCDPlate(MCP230XX):
         # Init control lines, backlight on (white)
         self.mcp.outputAll(0)
 
-        self.displayshift   = (self.LCD_CURSORMOVE |
-                               self.LCD_MOVERIGHT)
-        self.displaymode    = (self.LCD_ENTRYLEFT |
-                               self.LCD_ENTRYSHIFTDECREMENT)
+        self.displayshift = (self.LCD_CURSORMOVE |
+                             self.LCD_MOVERIGHT)
+        self.displaymode = (self.LCD_ENTRYLEFT |
+                            self.LCD_ENTRYSHIFTDECREMENT)
         self.displaycontrol = (self.LCD_DISPLAYON |
                                self.LCD_CURSOROFF |
                                self.LCD_BLINKOFF)
@@ -94,8 +94,8 @@ class CharLCDPlate(MCP230XX):
         self.write(0x32) # Init
         self.write(0x28) # 2 line 5x8 matrix
         self.write(self.LCD_CLEARDISPLAY)
-        self.write(self.LCD_CURSORSHIFT    | self.displayshift)
-        self.write(self.LCD_ENTRYMODESET   | self.displaymode)
+        self.write(self.LCD_CURSORSHIFT | self.displayshift)
+        self.write(self.LCD_ENTRYMODESET | self.displaymode)
         self.write(self.LCD_DISPLAYCONTROL | self.displaycontrol)
         self.write(self.LCD_RETURNHOME)
 
@@ -116,22 +116,22 @@ class CharLCDPlate(MCP230XX):
     def out4(self, bitmask, value):
         b = bitmask | self.flip[value >> 4] # Insert high 4 bits of data
         # Write initial !E state, data is sampled on rising strobe edge
-#       Commented out, seems to be OK setting & strobing at same time
-#       self.mcp.i2c.bus.write_byte_data(
-#         self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
+        #       Commented out, seems to be OK setting & strobing at same time
+        #       self.mcp.i2c.bus.write_byte_data(
+        #         self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
         # Strobe high (enable)
         self.mcp.i2c.bus.write_byte_data(
-          self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b | 0b00100000)
+            self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b | 0b00100000)
         # There's no need for delay calls when strobing, as the limited
         # I2C throughput already ensures the strobe is held long enough.
         b = bitmask | self.flip[value & 0x0F] # Insert low 4 bits
         # This also does strobe low (!enable) for prior nybble
         self.mcp.i2c.bus.write_byte_data(
-          self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
+            self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
         self.mcp.i2c.bus.write_byte_data(
-          self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b | 0b00100000)
+            self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b | 0b00100000)
         self.mcp.i2c.bus.write_byte_data(
-          self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
+            self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
         return b # Last port state
 
     # The speed of LCD accesses is inherently limited by I2C through the
@@ -172,28 +172,28 @@ class CharLCDPlate(MCP230XX):
             a = ((self.mcp.outputvalue >> 8) & 0b00000001) | 0b01000000
             b = a | 0b00100000 # E=1
             self.mcp.i2c.bus.write_byte_data(
-              self.mcp.i2c.address, self.mcp.MCP23017_OLATB, a)
+                self.mcp.i2c.address, self.mcp.MCP23017_OLATB, a)
             while True:
                 # Strobe high (enable)
                 self.mcp.i2c.bus.write_byte_data(
-                  self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
+                    self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
                 # First nybble contains busy state
                 bits = self.mcp.i2c.bus.read_byte_data(
-                  self.mcp.i2c.address, self.mcp.MCP23017_GPIOB)
+                    self.mcp.i2c.address, self.mcp.MCP23017_GPIOB)
                 # Strobe low (!enable)
                 self.mcp.i2c.bus.write_byte_data(
-                  self.mcp.i2c.address, self.mcp.MCP23017_OLATB, a)
+                    self.mcp.i2c.address, self.mcp.MCP23017_OLATB, a)
                 if (bits & 0b00000010) == 0: break # D7=0, not busy
                 # Ignore second nybble
                 self.mcp.i2c.bus.write_byte_data(
-                  self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
+                    self.mcp.i2c.address, self.mcp.MCP23017_OLATB, b)
                 self.mcp.i2c.bus.write_byte_data(
-                  self.mcp.i2c.address, self.mcp.MCP23017_OLATB, a)
+                    self.mcp.i2c.address, self.mcp.MCP23017_OLATB, a)
 
             # Polling complete, change data pins to outputs
             self.mcp.direction &= 0b1110000111111111
             self.mcp.i2c.bus.write_byte_data(self.mcp.i2c.address,
-              self.mcp.MCP23017_IODIRB, self.mcp.direction >> 8)
+                                             self.mcp.MCP23017_IODIRB, self.mcp.direction >> 8)
 
         # Mask out data bits & RW from current OLATB value
         a = ((self.mcp.outputvalue >> 8) & 0b00000001)
@@ -216,7 +216,7 @@ class CharLCDPlate(MCP230XX):
         if (not char_mode) and (value in self.pollables):
             self.mcp.direction |= 0b0001111000000000
             self.mcp.i2c.bus.write_byte_data(self.mcp.i2c.address,
-              self.mcp.MCP23017_IODIRB, self.mcp.direction >> 8)
+                                             self.mcp.MCP23017_IODIRB, self.mcp.direction >> 8)
 
 
     # ----------------------------------------------------------------------
@@ -237,9 +237,12 @@ class CharLCDPlate(MCP230XX):
 
 
     row_offsets = ( 0x00, 0x40, 0x14, 0x54 )
+
     def setCursor(self, col, row):
-        if row > self.numlines: row = self.numlines - 1
-        elif row < 0:           row = 0
+        if row > self.numlines:
+            row = self.numlines - 1
+        elif row < 0:
+            row = 0
         self.write(self.LCD_SETDDRAMADDR | (col + self.row_offsets[row]))
 
 
@@ -347,7 +350,7 @@ class CharLCDPlate(MCP230XX):
              (((~color) & 0b111) << 6))
         # Direct smbus call so everything toggles together
         self.mcp.i2c.bus.write_word_data(
-          self.mcp.i2c.address, self.mcp.MCP23017_OLATA, n)
+            self.mcp.i2c.address, self.mcp.MCP23017_OLATA, n)
         self.mcp.outputvalue = n
 
 
@@ -355,8 +358,9 @@ class CharLCDPlate(MCP230XX):
         return not self.mcp.input(b) if 0 <= b <= self.LEFT else False
 
 
-    # ----------------------------------------------------------------------
-    # Test code
+        # ----------------------------------------------------------------------
+        # Test code
+
 
 if __name__ == '__main__':
 
@@ -368,24 +372,24 @@ if __name__ == '__main__':
     lcd.message("Adafruit RGB LCD\nPlate w/Keypad!")
     sleep(1)
 
-    col = (('Red' , lcd.RED) , ('Yellow', lcd.YELLOW), ('Green' , lcd.GREEN),
-           ('Teal', lcd.TEAL), ('Blue'  , lcd.BLUE)  , ('Violet', lcd.VIOLET),
-           ('Off' , lcd.OFF) , ('On'    , lcd.ON))
+    col = (('Red', lcd.RED), ('Yellow', lcd.YELLOW), ('Green', lcd.GREEN),
+           ('Teal', lcd.TEAL), ('Blue', lcd.BLUE), ('Violet', lcd.VIOLET),
+           ('Off', lcd.OFF), ('On', lcd.ON))
 
     print "Cycle thru backlight colors"
     for c in col:
-       print c[0]
-       lcd.clear()
-       lcd.message(c[0])
-       lcd.backlight(c[1])
-       sleep(0.5)
+        print c[0]
+        lcd.clear()
+        lcd.message(c[0])
+        lcd.backlight(c[1])
+        sleep(0.5)
 
     btn = ((lcd.SELECT, 'Select', lcd.ON),
-           (lcd.LEFT  , 'Left'  , lcd.RED),
-           (lcd.UP    , 'Up'    , lcd.BLUE),
-           (lcd.DOWN  , 'Down'  , lcd.GREEN),
-           (lcd.RIGHT , 'Right' , lcd.VIOLET))
-    
+           (lcd.LEFT, 'Left', lcd.RED),
+           (lcd.UP, 'Up', lcd.BLUE),
+           (lcd.DOWN, 'Down', lcd.GREEN),
+           (lcd.RIGHT, 'Right', lcd.VIOLET))
+
     print "Try buttons on plate"
     lcd.clear()
     lcd.message("Try buttons")
