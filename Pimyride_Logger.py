@@ -23,16 +23,15 @@
 # along with PiMyRide; if not, visit http://www.gnu.org/licenses/gpl.html
 ###########################################################################
 
-import obd_io
-import serial
-import platform
-import obd_sensors
 from datetime import datetime
-import time
-from time import sleep, strftime
-from obd_utils import scanSerial
+from time import sleep
 import sys
 import os
+
+import obd_io
+import serial
+import obd_sensors
+from obd_utils import scanSerial
 
 
 class PiMyRide_Logger():

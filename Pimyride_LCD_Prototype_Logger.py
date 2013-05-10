@@ -24,19 +24,16 @@
 # along with PiMyRide; if not, visit http://www.gnu.org/licenses/gpl.html
 ###########################################################################
 
-import obd_io
-import serial
-import platform
-import obd_sensors
 from datetime import datetime
-import time
 import sys
-from CharLCD import CharLCD
-from subprocess import *
-from time import sleep, strftime
-from obd_utils import scanSerial
+from time import sleep
 import os
 
+import obd_io
+import serial
+import obd_sensors
+from CharLCD import CharLCD
+from obd_utils import scanSerial
 
 class PiMyRide_Logger():
     def __init__(self, path, log_sensors):

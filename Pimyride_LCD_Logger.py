@@ -79,8 +79,8 @@ class PiMyRide_Logger():
                 break
 
     def get_mpg(self, MPH, MAF):
-        #Instant_MPG = (14.7 * 8.637571 * 4.54 * MPH) / (3600 * (MAF * 7.5599) / 100)#Diesel Inaccurate formula
-        Instant_MPG = (14.7 * 7.273744 * 4.54 * MPH) / (3600 * MAF / 100)#Petrol Should be highly accurate
+        #  Instant_MPG = (14.7 * 8.637571 * 4.54 * MPH) / (3600 * (MAF * 7.5599) / 100)  #Diesel Inaccurate formula
+        Instant_MPG = (14.7 * 7.273744 * 4.54 * MPH) / (3600 * MAF / 100)  # Petrol Should be highly accurate
         return Instant_MPG
 
     def record_data(self):
@@ -101,11 +101,11 @@ class PiMyRide_Logger():
                 log_data = log_data + "," + str(value) # add to log string
                 result_set[
                     obd_sensors.SENSORS[index].shortname] = value; # add data to a result set for more manipulation
-            # we dont want to log "NODATA" if the car drops the OBDII connetion rather exit the program
+                # we dont want to log "NODATA" if the car drops the OBDII connetion rather exit the program
             if (result_set["rpm"] == "NODATA") or (result_set["speed"] == "NODATA") or (
-                result_set["throttle_pos"] == "NODATA") or (result_set["load"] == "NODATA") or (
-                result_set["temp"] == "NODATA") or (result_set["intake_air_temp"] == "NODATA") or (
-                result_set["manifold_pressure"] == "NODATA") or (result_set["maf"] == "NODATA"):
+                    result_set["throttle_pos"] == "NODATA") or (result_set["load"] == "NODATA") or (
+                    result_set["temp"] == "NODATA") or (result_set["intake_air_temp"] == "NODATA") or (
+                    result_set["manifold_pressure"] == "NODATA") or (result_set["maf"] == "NODATA"):
                 self.lcd.clear()
                 self.lcd.message("Connection Error\n Disconnecting")
                 sleep(3)  # show the message
