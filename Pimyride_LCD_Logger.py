@@ -92,8 +92,8 @@ class PiMyRide_Logger():
         print "Logging started"
 
         while 1:
-            log_time = datetime.now().strftime('%d%b-%H:%M:%S.%f') # todays date and time
-            log_data = log_time # start of the logging string
+            log_time = datetime.now().strftime('%d%b-%H:%M:%S.%f')  # todays date and time
+            log_data = log_time  # start of the logging string
             result_set = {}
             for index in self.sensorlist:# log all of our sensors data from sensorlist
                 (name, value, unit) = self.port.sensor(index)
